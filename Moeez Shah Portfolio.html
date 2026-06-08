@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Moeez Ahmed Shah · Lead Game Developer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow:wght@300;400;500;600;700&family=Barlow+Condensed:wght@500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --acc: oklch(0.72 0.2 42); --acc2: oklch(0.78 0.16 60); }
+  html { scroll-behavior: smooth; }
+  body { background: #07080a; color: #f3f1ee; font-family: 'Barlow', sans-serif; }
+
+  /* ---------- placeholder bits ---------- */
+  .ph-tag { position:absolute; top:14px; left:14px; z-index:3; font-family:'Space Mono', monospace; font-size:10px;
+    letter-spacing:.12em; color: rgba(255,255,255,.7); text-transform: uppercase;
+    border:1px solid rgba(255,255,255,.22); padding:4px 8px; border-radius:2px; background: rgba(5,6,8,.35); }
+
+  /* ---------- nav ---------- */
+  .nav { position: absolute; top:0; left:0; right:0; z-index: 20; display: flex; align-items: center;
+    justify-content: space-between; padding: 30px 56px; }
+  .logo { font-family: 'Anton', sans-serif; font-size: 26px; letter-spacing: .16em; }
+  .logo b { color: var(--acc); font-weight: 400; }
+  .navlinks { display: flex; gap: 34px; align-items: center; }
+  .navlinks a { color: rgba(255,255,255,.74); text-decoration: none; font-size: 14px;
+    letter-spacing: .14em; text-transform: uppercase; font-weight: 600; transition: color .2s; }
+  .navlinks a:hover { color: #fff; }
+  .navlinks a.studio { color: var(--acc); border: 1px solid var(--acc); padding: 9px 16px; border-radius: 2px; }
+  .navlinks a.studio:hover { background: var(--acc); color:#1a0a02; }
+
+  /* ---------- hero ---------- */
+  .hero { position: relative; min-height: 100vh; display:flex; flex-direction:column;
+    justify-content:flex-end; padding: 0 56px 64px; overflow: hidden; }
+  .hero-fallback { position:absolute; inset:0; z-index:0; background:
+    radial-gradient(120% 90% at 72% 8%, rgba(255,94,43,.16), transparent 55%),
+    radial-gradient(80% 80% at 18% 95%, rgba(40,30,60,.5), transparent 60%), #08090c; }
+  .hero-video { position:absolute; inset:0; z-index:1; }
+  .hero-video video { width:100%; height:100%; object-fit:cover; display:block; }
+  .hero-grain { position:absolute; inset:0; z-index:2; opacity:.45;
+    background: repeating-linear-gradient(0deg, rgba(0,0,0,.22) 0 2px, transparent 2px 4px); mix-blend-mode: overlay; }
+  .hero-scrim { position:absolute; inset:0; z-index:3;
+    background: linear-gradient(180deg, rgba(7,8,10,.66) 0%, rgba(7,8,10,.18) 32%, rgba(7,8,10,.86) 88%, #07080a 100%); }
+  .hero-hint { position:absolute; top:96px; right:56px; z-index:5; font-family:'Space Mono',monospace; font-size:11px;
+    letter-spacing:.08em; color: rgba(255,255,255,.4); border:1px dashed rgba(255,255,255,.2); padding:6px 10px; border-radius:3px; }
+  .hero-inner { position:relative; z-index:5; max-width: 820px; }
+  .eyebrow { display:inline-flex; align-items:center; gap:10px; font-family:'Space Mono',monospace;
+    font-size: 14px; letter-spacing: .28em; text-transform: uppercase; color: var(--acc); margin-bottom: 18px; }
+  .eyebrow::before { content:''; width:34px; height:1px; background: var(--acc); display:inline-block; }
+  .subline { font-size: 31px; max-width: 680px; color: #fff; line-height: 1.3; font-weight: 600; }
+  .stats { position:absolute; right:56px; bottom:64px; z-index:5; display:flex; gap:42px; text-align:right; }
+  .stat .n { font-family:'Anton',sans-serif; font-size:42px; color: var(--acc2); line-height:1; }
+  .stat .l { font-family:'Space Mono',monospace; font-size:11px; letter-spacing:.12em; text-transform:uppercase;
+    color: rgba(255,255,255,.5); margin-top:8px; }
+
+  /* ---------- work ---------- */
+  .work { padding: 86px 56px 100px; max-width: 1600px; margin: 0 auto; }
+  .work-head { display:flex; align-items:flex-end; justify-content:space-between; margin-bottom: 38px;
+    border-bottom: 1px solid rgba(255,255,255,.1); padding-bottom: 20px; }
+  .work-head h2 { font-family:'Anton',sans-serif; font-size: 64px; letter-spacing:.02em; text-transform:uppercase; line-height:.95; }
+  .work-head .idx { font-family:'Space Mono',monospace; color: var(--acc); letter-spacing:.2em; font-size:14px; }
+  .prod-feat { display:grid; grid-template-columns: 1fr 1fr; gap:18px; margin-bottom:18px; }
+  .prod-grid { display:grid; grid-template-columns: repeat(2,1fr); gap:18px; }
+
+  .pc { position:relative; border-radius:5px; overflow:hidden; background:#0e0e11; cursor:pointer; }
+  .pc.feat { aspect-ratio: 16 / 8.2; }
+  .pc.small { aspect-ratio: 16 / 8.6; }
+  .pcvid { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block; z-index:1; }
+  .vph { position:absolute; inset:0; z-index:2; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:14px; transition: opacity .4s; background-color:#101013;
+    background-image: repeating-linear-gradient(45deg, rgba(255,255,255,.04) 0 11px, rgba(255,255,255,.012) 11px 24px); }
+  .vph-play { width:64px; height:64px; border-radius:50%; border:1.5px solid rgba(255,255,255,.35);
+    display:flex; align-items:center; justify-content:center; font-size:22px; color:rgba(255,255,255,.7); padding-left:5px; }
+  .vph-file { font-family:'Space Mono',monospace; font-size:12px; color: var(--acc2); letter-spacing:.03em; }
+  .vph-hint { font-family:'Space Mono',monospace; font-size:10px; letter-spacing:.18em; text-transform:uppercase; color:rgba(255,255,255,.4); }
+  .pc .scrim { position:absolute; inset:0; z-index:3; pointer-events:none;
+    background: linear-gradient(0deg, rgba(7,8,10,.94) 2%, rgba(7,8,10,.18) 44%, transparent 72%); }
+  .pc .meta { position:absolute; left:0; right:0; bottom:0; z-index:4; padding: 24px; }
+  .pc .gtitle { font-family:'Anton',sans-serif; font-size:26px; text-transform:uppercase; letter-spacing:.02em; line-height:1.02; }
+  .pc.feat .gtitle { font-size:40px; }
+  .pc .gtags { font-family:'Space Mono',monospace; font-size:11px; color:var(--acc2); letter-spacing:.08em;
+    text-transform:uppercase; margin-top:9px; }
+
+  footer { padding: 40px 56px 60px; border-top:1px solid rgba(255,255,255,.08); display:flex; justify-content:space-between;
+    align-items:center; flex-wrap:wrap; gap:16px; }
+  footer .f-name { font-family:'Anton',sans-serif; letter-spacing:.14em; font-size:20px; }
+  footer .f-contact { font-family:'Space Mono',monospace; font-size:12px; color:rgba(255,255,255,.5); letter-spacing:.05em; }
+  footer .f-contact a { color: var(--acc2); text-decoration:none; }
+
+  @media (max-width: 1100px) {
+    .nav { padding: 22px 24px; } .navlinks { gap:18px; }
+    .navlinks a:not(.studio) { display:none; }
+    .hero { padding: 0 24px 40px; } .subline { font-size: 24px; }
+    .stats { position:static; justify-content:flex-start; margin-top:24px; }
+    .work { padding: 56px 24px 70px; } .work-head h2 { font-size: 44px; }
+    .prod-feat, .prod-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+  <nav class="nav">
+    <div class="logo">MOE<b>EZ</b></div>
+    <div class="navlinks">
+      <a href="#work">Work</a>
+      <a href="#">About</a>
+      <a href="#">Services</a>
+      <a href="mailto:moeezshah2019@gmail.com">Contact</a>
+      <a class="studio" href="#">The Studio →</a>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div class="hero-fallback"></div>
+    <div class="hero-video">
+      <video class="pcvid heroVid" muted loop autoplay playsinline preload="metadata">
+        <source src="media/moeez/showreel.mp4" type="video/mp4" />
+      </video>
+    </div>
+    <div class="hero-grain"></div>
+    <div class="hero-scrim"></div>
+    <div class="hero-hint">▶ drop showreel → media/moeez/showreel.mp4</div>
+    <div class="hero-inner">
+      <div class="eyebrow">Senior / Lead Game Developer</div>
+      <p class="subline">I architect multiplayer, Web3 and metaverse systems — leading teams to ship scalable, immersive worlds across Unreal Engine and Unity.</p>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="n">6</div><div class="l">Projects</div></div>
+      <div class="stat"><div class="n">4+</div><div class="l">Yrs · Lead</div></div>
+      <div class="stat"><div class="n">UE5</div><div class="l">Unity · Web3 · AI</div></div>
+    </div>
+  </header>
+
+  <section class="work" id="work">
+    <div class="work-head">
+      <h2>Products Worked On</h2>
+      <div class="idx">01 — 06</div>
+    </div>
+    <div class="prod-feat" id="featRow"></div>
+    <div class="prod-grid" id="gridRow"></div>
+  </section>
+
+  <footer>
+    <div class="f-name">MOEEZ AHMED SHAH</div>
+    <div class="f-contact">UNREAL · UNITY · WEB3 · METAVERSE &nbsp;·&nbsp; <a href="mailto:moeezshah2019@gmail.com">moeezshah2019@gmail.com</a></div>
+  </footer>
+
+  <script>
+    // Projects from resume. Each maps to a LOCAL video file you drop into media/moeez/.
+    const FEATURE = [
+      { t: "Apes Planet", file: "media/moeez/ApesPlanet.mp4", tags: "Metaverse · SDK · Web3 · AI NPCs", tag: "UE5 · Web3" },
+      { t: "Grand Gangsta City", file: "media/moeez/GrandGangstaCity.mp4", tags: "Open-World · Lyra · City Sample", tag: "2024 — Now" },
+    ];
+    const GRID = [
+      { t: "BeeCasino", file: "media/moeez/BeeCasino.mp4", tags: "Decentralized · VR · PvP Betting", tag: "WebGL" },
+      { t: "Crazy Battle", file: "media/moeez/CrazyBattle.mp4", tags: "PvP · Vehicle Combat · Rewards", tag: "Multiplayer" },
+      { t: "Metarebels TrustVerse", file: "media/moeez/MetarebelsTrustVerse.mp4", tags: "Metaverse · TrustVibes", tag: "Metaverse" },
+      { t: "Arcade AI 3D", file: "media/moeez/ArcadeAI3D.mp4", tags: "AI · Neural Network · 3D Sim", tag: "AI" },
+    ];
+
+    function card(g, feat) {
+      return `
+        <div class="pc ${feat ? 'feat' : 'small'}">
+          <video class="pcvid" muted loop autoplay playsinline preload="metadata">
+            <source src="${g.file}" type="video/mp4" />
+          </video>
+          <div class="vph">
+            <div class="vph-play">▶</div>
+            <div class="vph-file">${g.file}</div>
+            <div class="vph-hint">drop video here</div>
+          </div>
+          <div class="scrim"></div>
+          <span class="ph-tag">${g.tag}</span>
+          <div class="meta">
+            <div class="gtitle">${g.t}</div>
+            <div class="gtags">${g.tags}</div>
+          </div>
+        </div>`;
+    }
+
+    document.getElementById('featRow').innerHTML = FEATURE.map(g => card(g, true)).join('');
+    document.getElementById('gridRow').innerHTML = GRID.map(g => card(g, false)).join('');
+
+    // Reveal each video once its local file is present; keep the placeholder until then.
+    document.querySelectorAll('.pcvid').forEach(v => {
+      const ph = v.closest('.pc, .hero-video')?.querySelector('.vph');
+      const hint = document.querySelector('.hero-hint');
+      const isHero = v.classList.contains('heroVid');
+      v.addEventListener('loadeddata', () => {
+        if (ph) ph.style.opacity = '0';
+        if (isHero && hint) hint.style.opacity = '0';
+        v.play().catch(() => {});
+      });
+    });
+  </script>
+</body>
+</html>

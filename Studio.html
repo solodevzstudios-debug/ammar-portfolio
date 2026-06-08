@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Ember Studio · Game Development</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow:wght@300;400;500;600;700&family=Barlow+Condensed:wght@500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --acc: oklch(0.72 0.2 42); --acc2: oklch(0.78 0.16 60); --bg: #07080a; --ink: #f3f1ee; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--ink); font-family: 'Barlow', sans-serif; overflow-x: hidden; }
+  a { color: inherit; }
+  ::selection { background: var(--acc); color: #1a0a02; }
+
+  .spot { position: fixed; width: 460px; height: 460px; border-radius: 50%; pointer-events: none; z-index: 1;
+    background: radial-gradient(circle, rgba(255,120,60,.1), transparent 64%); transform: translate(-50%, -50%);
+    left: 50%; top: 30%; mix-blend-mode: screen; }
+
+  /* nav */
+  .nav { position: fixed; top: 0; left: 0; right: 0; z-index: 40; display: flex; align-items: center;
+    justify-content: space-between; padding: 24px 56px; transition: padding .35s, background .35s, backdrop-filter .35s, border-color .35s;
+    border-bottom: 1px solid transparent; }
+  .nav.scrolled { padding: 14px 56px; background: rgba(8,9,11,.72); backdrop-filter: blur(14px); border-bottom: 1px solid rgba(255,255,255,.08); }
+  .logo { font-family: 'Anton', sans-serif; font-size: 26px; letter-spacing: .16em; text-decoration: none; }
+  .logo b { color: var(--acc); font-weight: 400; }
+  .navlinks { display: flex; gap: 30px; align-items: center; }
+  .navlinks a { text-decoration: none; font-size: 13.5px; letter-spacing: .14em; text-transform: uppercase;
+    font-weight: 600; color: rgba(255,255,255,.72); position: relative; transition: color .2s; }
+  .navlinks a.link::after { content: ''; position: absolute; left: 0; bottom: -6px; height: 1.5px; width: 0; background: var(--acc); transition: width .28s; }
+  .navlinks a.link:hover { color: #fff; } .navlinks a.link:hover::after { width: 100%; }
+  .navlinks a.cta { color: var(--acc); border: 1px solid var(--acc); padding: 9px 16px; border-radius: 2px; transition: background .2s, color .2s, box-shadow .2s; }
+  .navlinks a.cta:hover { background: var(--acc); color: #1a0a02; box-shadow: 0 0 24px rgba(255,94,43,.4); }
+
+  /* hero */
+  .hero { position: relative; min-height: 100vh; display: flex; flex-direction: column; justify-content: center;
+    padding: 120px 56px 64px; overflow: hidden; }
+  .hero-bg { position: absolute; inset: 0; z-index: 0; background:
+    radial-gradient(120% 90% at 75% 12%, rgba(255,94,43,.2), transparent 52%),
+    radial-gradient(90% 80% at 12% 88%, rgba(50,34,72,.55), transparent 58%), #08090c; }
+  .hero-bg::after { content: ''; position: absolute; inset: 0; opacity: .5; mix-blend-mode: overlay;
+    background: repeating-linear-gradient(0deg, rgba(0,0,0,.22) 0 2px, transparent 2px 4px); }
+  .hero-inner { position: relative; z-index: 5; max-width: 1120px; }
+  .eyebrow { display: inline-flex; align-items: center; gap: 10px; font-family: 'Space Mono', monospace;
+    font-size: 14px; letter-spacing: .3em; text-transform: uppercase; color: var(--acc); margin-bottom: 26px; }
+  .eyebrow::before { content: ''; width: 34px; height: 1px; background: var(--acc); }
+  .eyebrow .pulse { width: 8px; height: 8px; border-radius: 50%; background: var(--acc); box-shadow: 0 0 10px var(--acc); animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .3; } }
+  h1.head { font-family: 'Anton', sans-serif; font-size: clamp(48px, 7vw, 116px); line-height: .92; letter-spacing: .005em;
+    text-transform: uppercase; }
+  h1.head .o { color: var(--acc); }
+  .lead { font-size: clamp(18px, 2vw, 25px); color: rgba(255,255,255,.74); max-width: 760px; margin-top: 28px; line-height: 1.5; }
+  .lead b { color: var(--acc2); font-weight: 600; }
+  .hbtns { display: flex; gap: 14px; margin-top: 40px; flex-wrap: wrap; }
+  .btn { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+    font-size: 17px; padding: 16px 30px; border-radius: 3px; text-decoration: none; display: inline-flex; align-items: center;
+    gap: 10px; transition: transform .2s, box-shadow .2s, border-color .2s, background .2s; }
+  .btn.fill { background: var(--acc); color: #1a0a02; }
+  .btn.fill:hover { box-shadow: 0 0 28px rgba(255,94,43,.45); transform: translateY(-2px); }
+  .btn.ghost { border: 1px solid rgba(255,255,255,.28); color: #fff; }
+  .btn.ghost:hover { border-color: #fff; transform: translateY(-2px); }
+  .hstats { display: flex; gap: 54px; margin-top: 64px; flex-wrap: wrap; }
+  .hstat .n { font-family: 'Anton', sans-serif; font-size: 46px; color: var(--acc2); line-height: 1; }
+  .hstat .l { font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: rgba(255,255,255,.5); margin-top: 8px; }
+
+  /* sections */
+  section { position: relative; z-index: 5; }
+  .wrap { max-width: 1640px; margin: 0 auto; padding: 96px 56px; }
+  .sec-head { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 40px;
+    border-bottom: 1px solid rgba(255,255,255,.1); padding-bottom: 22px; gap: 20px; flex-wrap: wrap; }
+  .sec-head h2 { font-family: 'Anton', sans-serif; font-size: clamp(38px, 5vw, 66px); letter-spacing: .02em; text-transform: uppercase; line-height: .92; }
+  .sec-head .idx { font-family: 'Space Mono', monospace; color: var(--acc); letter-spacing: .2em; font-size: 14px; white-space: nowrap; }
+  .sec-head .sub { font-family: 'Space Mono', monospace; color: rgba(255,255,255,.5); font-size: 13px; letter-spacing: .06em; max-width: 380px; }
+
+  .reveal { opacity: 0; transform: translateY(28px); transition: opacity .8s cubic-bezier(.2,.7,.2,1), transform .8s cubic-bezier(.2,.7,.2,1); }
+  .reveal.in { opacity: 1; transform: none; }
+
+  /* services */
+  .svc-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .svc { border: 1px solid rgba(255,255,255,.1); border-radius: 8px; padding: 32px 30px 34px; background: rgba(255,255,255,.015);
+    transition: border-color .25s, transform .25s, background .25s; }
+  .svc:hover { border-color: rgba(255,94,43,.5); transform: translateY(-4px); background: rgba(255,94,43,.04); }
+  .svc .no { font-family: 'Space Mono', monospace; font-size: 12px; color: var(--acc); letter-spacing: .2em; }
+  .svc h3 { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: .03em;
+    font-size: 26px; margin: 16px 0 12px; }
+  .svc p { color: rgba(255,255,255,.6); font-size: 15.5px; line-height: 1.55; }
+
+  /* team cards (like products worked on) */
+  .team-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .pc { position: relative; border-radius: 6px; overflow: hidden; background: #0e0e11; display: block; text-decoration: none;
+    color: inherit; transition: transform .25s ease, box-shadow .35s ease; will-change: transform; height: 360px; }
+  .pc:hover { box-shadow: 0 24px 60px -20px rgba(0,0,0,.8), 0 0 0 1px rgba(255,255,255,.06); }
+  .pc-inner { position: absolute; inset: 0; }
+  .pc .mono { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    font-family: 'Anton', sans-serif; font-size: 92px; color: rgba(255,255,255,.9); z-index: 0;
+    background: linear-gradient(150deg, var(--c1, #2a2030), var(--c2, #15131c)); letter-spacing: .04em; }
+  .pc img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1;
+    transition: transform .6s cubic-bezier(.2,.7,.2,1); }
+  .pc:hover img { transform: scale(1.06); }
+  .pc .scrim { position: absolute; inset: 0; z-index: 2;
+    background: linear-gradient(0deg, rgba(7,8,10,.95) 2%, rgba(7,8,10,.25) 48%, transparent 74%); }
+  .pc .ph-tag { position: absolute; top: 14px; left: 14px; z-index: 3; font-family: 'Space Mono', monospace; font-size: 10px;
+    letter-spacing: .12em; color: rgba(255,255,255,.7); text-transform: uppercase; border: 1px solid rgba(255,255,255,.22);
+    padding: 4px 8px; border-radius: 2px; background: rgba(5,6,8,.4); }
+  .pc .meta { position: absolute; left: 0; right: 0; bottom: 0; z-index: 4; padding: 26px; }
+  .pc .gtitle { font-family: 'Anton', sans-serif; font-size: 30px; text-transform: uppercase; letter-spacing: .02em; line-height: 1.02; }
+  .pc .gtags { font-family: 'Space Mono', monospace; font-size: 11px; color: var(--acc2); letter-spacing: .08em; text-transform: uppercase; margin-top: 10px; }
+  .pc .view { display: inline-flex; align-items: center; gap: 8px; margin-top: 15px; font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700; letter-spacing: .12em; text-transform: uppercase; font-size: 14px; color: #fff; opacity: 0; transform: translateY(8px);
+    transition: opacity .3s, transform .3s; }
+  .pc .view .arr { display: inline-flex; width: 26px; height: 26px; border-radius: 50%; border: 1px solid var(--acc);
+    align-items: center; justify-content: center; color: var(--acc); }
+  .pc:hover .view { opacity: 1; transform: none; }
+  .pc.add { border: 1.5px dashed rgba(255,255,255,.18); background: transparent; display: flex; align-items: center; justify-content: center; }
+  .pc.add .addinner { text-align: center; }
+  .pc.add .plus { font-size: 40px; color: rgba(255,255,255,.4); }
+  .pc.add .t { font-family: 'Space Mono', monospace; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: rgba(255,255,255,.45); margin-top: 10px; }
+
+  /* collaborating studios */
+  .studio-grid { display: grid; grid-template-columns: minmax(0, 560px); gap: 16px; }
+  .stu { position: relative; border: 1px solid rgba(255,255,255,.1); border-radius: 8px; padding: 38px 34px; background: rgba(255,255,255,.015);
+    text-decoration: none; color: inherit; display: flex; flex-direction: column; gap: 16px; min-height: 220px; justify-content: space-between;
+    transition: border-color .25s, transform .25s, background .25s; }
+  .stu:hover { border-color: rgba(255,94,43,.5); transform: translateY(-4px); background: rgba(255,94,43,.04); }
+  .stu .badge { font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--acc); }
+  .stu .sname { font-family: 'Anton', sans-serif; font-size: 32px; text-transform: uppercase; letter-spacing: .02em; line-height: 1.04; }
+  .stu .sdesc { color: rgba(255,255,255,.6); font-size: 15px; line-height: 1.5; }
+  .stu .slink { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+    font-size: 14px; color: var(--acc2); display: inline-flex; align-items: center; gap: 8px; }
+  .stu.add { border-style: dashed; align-items: center; justify-content: center; text-align: center; color: rgba(255,255,255,.45); }
+
+  /* hire band */
+  .hire { max-width: 1640px; margin: 0 auto; padding: 40px 56px 0; }
+  .hire-card { border: 1px solid rgba(255,255,255,.1); border-radius: 12px; padding: 70px 56px;
+    background: radial-gradient(130% 180% at 100% 0%, rgba(255,94,43,.16), transparent 56%), rgba(255,255,255,.02);
+    display: flex; align-items: center; justify-content: space-between; gap: 36px; flex-wrap: wrap; }
+  .hire-card h3 { font-family: 'Anton', sans-serif; font-size: clamp(34px, 4.4vw, 60px); text-transform: uppercase; line-height: .96; }
+  .hire-card p { color: rgba(255,255,255,.62); font-size: 17px; margin-top: 14px; max-width: 480px; line-height: 1.55; }
+
+  footer { position: relative; z-index: 5; max-width: 1640px; margin: 80px auto 0; padding: 40px 56px 60px;
+    display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; border-top: 1px solid rgba(255,255,255,.08); }
+  footer .fn { font-family: 'Anton', sans-serif; letter-spacing: .14em; font-size: 20px; }
+  footer .fc { font-family: 'Space Mono', monospace; font-size: 12px; color: rgba(255,255,255,.5); letter-spacing: .05em; }
+
+  @media (max-width: 1100px) {
+    .nav, .nav.scrolled { padding: 16px 22px; } .navlinks { gap: 14px; } .navlinks a.link { display: none; }
+    .wrap, .hire { padding-left: 22px; padding-right: 22px; } .hero { padding: 110px 22px 56px; }
+    .svc-grid, .team-grid, .studio-grid { grid-template-columns: 1fr; }
+    .hstats { gap: 32px; }
+  }
+  @media (prefers-reduced-motion: reduce) { .reveal { opacity: 1 !important; transform: none !important; } .pulse { animation: none !important; } }
+</style>
+</head>
+<body>
+  <div class="spot" id="spot"></div>
+
+  <nav class="nav" id="nav">
+    <a class="logo" href="#top">EM<b>BER</b></a>
+    <div class="navlinks">
+      <a class="link" href="#services">Services</a>
+      <a class="link" href="#team">Team</a>
+      <a class="link" href="#studios">Studios</a>
+      <a class="link" href="Ammar Portfolio.html">Portfolio</a>
+      <a class="cta" href="mailto:ammarmuhammad687@gmail.com?subject=Project%20Inquiry%20—%20Ember%20Studio">Hire the Team →</a>
+    </div>
+  </nav>
+
+  <header class="hero" id="top">
+    <div class="hero-bg"></div>
+    <div class="hero-inner">
+      <div class="eyebrow"><span class="pulse"></span>Independent Game Studio</div>
+      <h1 class="head">We build<br /><span class="o">immersive games</span><br />end to end.</h1>
+      <p class="lead">Ember is a tight-knit collective of <b>senior developers, designers and 3D artists</b> shipping atmospheric, combat-driven worlds in Unreal Engine &amp; Unity — from first prototype to launch. <b>Hire us as a team</b> and skip the hiring grind.</p>
+      <div class="hbtns">
+        <a class="btn fill" href="mailto:ammarmuhammad687@gmail.com?subject=Project%20Inquiry%20—%20Ember%20Studio">Start a Project →</a>
+        <a class="btn ghost" href="#team">Meet the Team</a>
+      </div>
+      <div class="hstats">
+        <div class="hstat"><div class="n">12+</div><div class="l">Titles Shipped</div></div>
+        <div class="hstat"><div class="n">12+</div><div class="l">Combined Years</div></div>
+        <div class="hstat"><div class="n">UE5 · Unity</div><div class="l">+ Web3 / Multiplayer</div></div>
+        <div class="hstat"><div class="n">PC · Mobile</div><div class="l">+ WebGL / Metaverse</div></div>
+      </div>
+    </div>
+  </header>
+
+  <section id="services">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <h2>What We Do</h2>
+        <div class="sub">Full-cycle game development, or drop us into your pipeline for the hard parts.</div>
+        <div class="idx">SERVICES</div>
+      </div>
+      <div class="svc-grid" id="svcGrid"></div>
+    </div>
+  </section>
+
+  <section id="team">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <h2>The Team</h2>
+        <div class="sub">Brilliant developers &amp; designers — available for hire individually or as a unit.</div>
+        <div class="idx">PEOPLE</div>
+      </div>
+      <div class="team-grid" id="teamGrid"></div>
+    </div>
+  </section>
+
+  <section id="studios">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <h2>We Collaborate With</h2>
+        <div class="sub">Partner studios we co-develop and ship titles with.</div>
+        <div class="idx">PARTNERS</div>
+      </div>
+      <div class="studio-grid" id="studioGrid"></div>
+    </div>
+  </section>
+
+  <section class="hire">
+    <div class="hire-card reveal">
+      <div>
+        <h3>Let's build<br />your game.</h3>
+        <p>Tell us about your project — full production, co-dev, level design, multiplayer or 3D environments. We reply within 24 hours.</p>
+      </div>
+      <div class="hbtns">
+        <a class="btn fill" href="mailto:ammarmuhammad687@gmail.com?subject=Project%20Inquiry%20—%20Ember%20Studio">Email the Studio →</a>
+        <a class="btn ghost" href="https://www.upwork.com/freelancers/~0144f64bdd5e07f709?mp_source=share" target="_blank" rel="noopener noreferrer">Hire on Upwork</a>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="fn">EMBER STUDIO</div>
+    <div class="fc">GAME DEVELOPMENT STUDIO · UNREAL · UNITY · WEB3 &nbsp;·&nbsp; KARACHI, PK</div>
+  </footer>
+
+  <script>
+    const SERVICES = [
+      { t: "Game Development", d: "End-to-end production in Unreal Engine 5 & Unity — gameplay systems, C++/Blueprints, and shippable builds across platforms." },
+      { t: "Level & Systems Design", d: "Combat encounters, progression, AI behaviour and immersive level layouts tuned for atmosphere and pacing." },
+      { t: "3D Art & Environments", d: "Game-ready environment art, props and lighting — from blockout to fully-dressed cinematic scenes." },
+      { t: "Multiplayer & Web3", d: "Scalable multiplayer, dedicated servers, metaverse and blockchain integrations built to handle real player load." },
+      { t: "VFX & Technical Art", d: "Niagara effects, shaders and the technical-art glue that makes a game feel expensive." },
+      { t: "Co-Dev & Porting", d: "Drop us into your existing pipeline to accelerate a milestone, fix the hard problems, or port across platforms." },
+    ];
+
+    // Team — real members link to their pages; add slots are clearly editable placeholders.
+    const TEAM = [
+      { name: "Muhammad Ammar", role: "Founder · UE Developer", tag: "Founder", skills: "Unreal · Gameplay · Enemy AI · VFX", photo: "media/team/ammar.jpg", c1: "#3a2118", c2: "#15110e", url: "Ammar Portfolio.html", ext: false },
+      { name: "Moeez Ahmed Shah", role: "Lead Developer", tag: "Lead Dev", skills: "Unreal · Unity · Web3 · Multiplayer", photo: "media/team/moeez.jpg", c1: "#1d2336", c2: "#101018", url: "Moeez Shah Portfolio.html", ext: false },
+      { name: "Ahad Iftikhar", role: "Technical Artist · Developer", tag: "Tech Art", skills: "UE5 · C++ · PCG · 3D · Shaders", photo: "media/team/ahad.jpg", c1: "#16302a", c2: "#0f1815", url: "https://www.artstation.com/abdulahad0022", ext: true },
+    ];
+
+    const STUDIOS = [
+      { name: "Midnight Ghoul Games", badge: "Collaborating Studio", desc: "Horror & atmospheric game studio we co-develop and ship titles with.", url: "https://midnightghoulgames.com/" },
+    ];
+
+    // services
+    document.getElementById('svcGrid').innerHTML = SERVICES.map((s, i) => `
+      <div class="svc reveal">
+        <div class="no">${String(i + 1).padStart(2, '0')}</div>
+        <h3>${s.t}</h3>
+        <p>${s.d}</p>
+      </div>`).join('');
+
+    // team
+    const teamGrid = document.getElementById('teamGrid');
+    TEAM.forEach(m => {
+      if (m.add) {
+        const d = document.createElement('div');
+        d.className = 'pc add reveal';
+        d.innerHTML = `<div class="addinner"><div class="plus">+</div><div class="t">Add a member</div></div>`;
+        teamGrid.appendChild(d);
+        return;
+      }
+      const initials = m.name.split(' ').map(w => w[0]).slice(0, 2).join('');
+      const el = document.createElement('a');
+      el.className = 'pc reveal';
+      el.href = m.url;
+      if (m.ext) { el.target = '_blank'; el.rel = 'noopener noreferrer'; }
+      const viewLabel = m.placeholder ? 'Add Link' : 'View Portfolio';
+      el.innerHTML = `
+        <div class="pc-inner">
+          <div class="mono" style="--c1:${m.c1};--c2:${m.c2}">${initials}</div>
+          <img src="${m.photo}" alt="${m.name}" loading="lazy" onerror="this.style.display='none'" />
+          <div class="scrim"></div>
+          <span class="ph-tag">${m.tag}</span>
+          <div class="meta">
+            <div class="gtitle">${m.name}</div>
+            <div class="gtags">${m.role}${m.skills ? ' · ' + m.skills : ''}</div>
+            <span class="view">${viewLabel} <span class="arr">→</span></span>
+          </div>
+        </div>`;
+      teamGrid.appendChild(el);
+    });
+
+    // studios
+    document.getElementById('studioGrid').innerHTML = STUDIOS.map(s => {
+      const ext = s.url.startsWith('http');
+      return `<a class="stu${s.add ? ' add' : ''} reveal" href="${s.url}" ${ext ? 'target="_blank" rel="noopener noreferrer"' : ''}>
+        <div>
+          <div class="badge">${s.badge}</div>
+          <div class="sname" style="margin-top:14px">${s.name}</div>
+          <div class="sdesc" style="margin-top:14px">${s.desc}</div>
+        </div>
+        <div class="slink">${ext ? 'Visit Studio ↗' : (s.add ? 'Add →' : 'Open →')}</div>
+      </a>`;
+    }).join('');
+
+    // reveal
+    const io = new IntersectionObserver((es) => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { threshold: 0.12 });
+    document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+    // nav scroll
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => nav.classList.toggle('scrolled', window.scrollY > 40), { passive: true });
+
+    // spotlight
+    const spot = document.getElementById('spot');
+    let sx = innerWidth / 2, sy = innerHeight * .3, tx = sx, ty = sy;
+    window.addEventListener('mousemove', e => { tx = e.clientX; ty = e.clientY; }, { passive: true });
+    (function loop() { sx += (tx - sx) * .12; sy += (ty - sy) * .12; spot.style.left = sx + 'px'; spot.style.top = sy + 'px'; requestAnimationFrame(loop); })();
+
+    // tilt on team cards
+    document.querySelectorAll('.team-grid .pc:not(.add)').forEach(pc => {
+      pc.addEventListener('mousemove', e => {
+        const r = pc.getBoundingClientRect();
+        const px = (e.clientX - r.left) / r.width - .5, py = (e.clientY - r.top) / r.height - .5;
+        pc.style.transform = `perspective(900px) rotateY(${px * 6}deg) rotateX(${-py * 6}deg)`;
+      });
+      pc.addEventListener('mouseleave', () => { pc.style.transform = ''; });
+    });
+  </script>
+</body>
+</html>
